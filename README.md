@@ -120,7 +120,7 @@ For the service add the `type: Loadbalancer` as seen below
       name: api-service
     spec:
       selector:
-        app: MyApp
+        app: api
       ports:
         - protocol: TCP
           port: 80
