@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api-Invoke", "Api-Invoke\Api-Invoke.csproj", "{7722E849-EECC-4E7E-B71E-7EB151A48670}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStore", "FileStore\FileStore.csproj", "{75FEEAB4-2BAC-4F96-817C-DA066477020C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7722E849-EECC-4E7E-B71E-7EB151A48670}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7722E849-EECC-4E7E-B71E-7EB151A48670}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7722E849-EECC-4E7E-B71E-7EB151A48670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75FEEAB4-2BAC-4F96-817C-DA066477020C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75FEEAB4-2BAC-4F96-817C-DA066477020C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75FEEAB4-2BAC-4F96-817C-DA066477020C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75FEEAB4-2BAC-4F96-817C-DA066477020C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
