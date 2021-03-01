@@ -12,7 +12,7 @@ namespace FileStore.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private const string FileName = "test.txt";
+        private const string FileName = "/tmp/text/test.txt";
 
         [HttpGet]
         public string Get()

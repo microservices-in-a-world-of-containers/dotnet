@@ -20,6 +20,13 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
+        volumeMounts:
+        - mountPath: "/tmp/text"
+          name: file-store-pv-storage
+      volumes:
+      - name: file-store-pv-storage
+        persistentVolumeClaim:
+          claimName: file-store-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -33,3 +40,14 @@ spec:
       port: 82
       targetPort: 80
   type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-store-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
