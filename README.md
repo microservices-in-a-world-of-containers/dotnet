@@ -1,7 +1,7 @@
 # microservices-in-a-world-of-containers dotnet
 
 ## Stuck?
-Stuck at any point in time, use the git tags created for this workshop to get up to speed.
+Stuck at any point in time, use the git tags created for this workshop to get up to speed (These tags only work for .Net 5 and project is now .Net 7).
 run `git reset --hard`
 followed by
 git checkout [tag]
@@ -22,7 +22,7 @@ Using Visual Studio
 - Create a ASP.NET Core Web Application
   - Disable HTTPS
   - Enable Docker Support
-  - Enable OpenAPi (Only available for Net 5.0)
+  - Enable OpenAPi
 
 Using Commandline:
 - dotnet new webApp -o myWebApp --no-https
