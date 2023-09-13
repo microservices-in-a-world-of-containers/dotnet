@@ -1,6 +1,6 @@
 using System;
 
-namespace api_Invoke
+namespace ApiInvoke
 {
     public class WeatherForecast
     {
@@ -10,6 +10,6 @@ namespace api_Invoke
 
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
     }
 }

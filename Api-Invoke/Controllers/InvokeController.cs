@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Api_Invoke.Controllers
+namespace ApiInvoke.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
