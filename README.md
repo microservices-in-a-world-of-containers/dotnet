@@ -63,7 +63,7 @@ Build your docker image (replace imagename and imagetag, with name of image and 
 
 Run your image and map your localhost port 80/81 to port 80 in the container:
 
-`docker run -p 80:80 api:1` 
+`docker run -p 80:80 api:1`
 
 `docker run -p 81:80 api:1`
 
@@ -90,7 +90,7 @@ Official doc: https://github.com/kubernetes/dashboard
 Validate kubernetes installation run: `kubectl get nodes`
 If it fails and you have played around with Kubernetes/OpenShift before try to run: `kubectl config use-context docker-desktop`
 
-Now run `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml`
+Now run `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml`
 
 Now run in a new terminal window `kubectl proxy`
 If you close this terminal window you can no longer access the dashboard.
@@ -98,9 +98,9 @@ Access dashboard at: http://localhost:8001/api/v1/namespaces/kubernetes-dashboar
 
 Now create an account that can access the dashboard, download the following file from gitHub sa.yaml: https://github.com/microservices-in-a-world-of-containers/dotnet/blob/main/Dashboard/sa.yaml
 
-Run `kubectl apply -f .\sa.yaml`
+Run `kubectl apply -f .\sa.yaml` or `kubectl apply -f https://github.com/microservices-in-a-world-of-containers/dotnet/blob/main/Dashboard/sa.yaml` 
 This will create a service account and give it cluster-admin access
-Run the following to get a token you can use for logging into the dashboard `kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"`
+Run the following to get a token you can use for logging into the dashboard `kubectl -n kubernetes-dashboard create token admin-user`
 Access dashboard at: http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
 You should now be logged in and be able to navigate the dashboard.
