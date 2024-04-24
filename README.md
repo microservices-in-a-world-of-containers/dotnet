@@ -25,8 +25,8 @@ Using Visual Studio
   - Enable OpenAPi
 
 Using Commandline:
-- dotnet new webApp -o myWebApp --no-https
-- Enable docker: https://docs.docker.com/engine/examples/dotnetcore/ 
+- dotnet new webapi -o myWebApp --no-https
+- Enable docker: https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows&pivots=dotnet-8-0#create-the-dockerfile
 
 Using Git and getting a default Visual Studio Solution
 - git clone https://github.com/microservices-in-a-world-of-containers/dotnet.git
@@ -36,17 +36,26 @@ Using Git and getting a default Visual Studio Solution
 Now add a new controller called Environment. Either create file similar to existing controller or use VS to create it by right clicking on Controllers and clicking create new.
 Setup a GET endpoint which returns the Machinename as a string, in the end it should look similar to below setup.
 
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EnvironmentController : ControllerBase
+```C#
+[Route("api/[controller]")]
+[ApiController]
+public class EnvironmentController : ControllerBase
+{
+    [HttpGet]
+    public string Get()
     {
-        [HttpGet]
-        public string Get()
-        {
-            return Environment.MachineName;
-        }
+        return Environment.MachineName;
     }
+}
+```
 
+Alternatively, in .NET8 or later, you can use the minimal API syntax, and add something similar to this in the `Program.cs`:
+```C#
+app.MapGet("/machinename", () =>
+{
+  return Environment.MachineName;
+});
+```
 
 Not working? Get to this point: `git checkout task-1-controller` 
 
@@ -59,16 +68,19 @@ I have called my API `api` you can call yours whatever you want.
 Build your docker image (replace imagename and imagetag, with name of image and version): 
 
 `docker build -t imagename:imagetag -f .\Api\Dockerfile .`
+
 `docker build -t api:1 -f .\Api\Dockerfile .`
 
-Run your image and map your localhost port 80/81 to port 80 in the container:
+Run your image and map your localhost port 80/81 (or whatever port you prefer) to port 80 (or the port your api uses) in the container:
 
 `docker run -p 80:80 api:1`
 
 `docker run -p 81:80 api:1`
 
 Show your running docker containers `docker ps`
+
 Stop a container `docker stop XXXXXX`
+
 More docker commands: https://www.docker.com/sites/default/files/Docker_CheatSheet_08.09.2016_0.pdf
 
 When testing remember to add your path:
