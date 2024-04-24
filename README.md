@@ -51,7 +51,7 @@ public class EnvironmentController : ControllerBase
 
 Alternatively, in .NET8 or later, you can use the minimal API syntax, and add something similar to this in the `Program.cs`:
 ```C#
-app.MapGet("/machinename", () =>
+app.MapGet("/Environment", () =>
 {
   return Environment.MachineName;
 });
@@ -84,9 +84,8 @@ Stop a container `docker stop XXXXXX`
 More docker commands: https://www.docker.com/sites/default/files/Docker_CheatSheet_08.09.2016_0.pdf
 
 When testing remember to add your path:
-
-If using similar to WeatherForecast: http://localhost/Environment
-If using VS "Add Controller": http://localhost/api/Environment
+- If using similar to WeatherForecast: http://localhost/Environment
+- If using VS "Add Controller": http://localhost/api/Environment
 
 Port 81:
 http://localhost:81/Environment
@@ -108,7 +107,7 @@ Now run in a new terminal window `kubectl proxy`
 If you close this terminal window you can no longer access the dashboard.
 Access dashboard at: http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
-Now create an account that can access the dashboard, download the following file from gitHub sa.yaml: https://github.com/microservices-in-a-world-of-containers/dotnet/blob/main/Dashboard/sa.yaml
+Now create an account that can access the dashboard, download the following file from gitHub `sa.yaml`: https://github.com/microservices-in-a-world-of-containers/dotnet/blob/main/Dashboard/sa.yaml
 
 Run `kubectl apply -f .\sa.yaml` or `kubectl apply -f https://github.com/microservices-in-a-world-of-containers/dotnet/blob/main/Dashboard/sa.yaml` 
 This will create a service account and give it cluster-admin access
@@ -120,54 +119,54 @@ You should now be logged in and be able to navigate the dashboard.
 Not working? Get to this point: `git checkout task-2-sa` 
 
 ## 3 Deploy API to Kubernetes
-Now try to add the created docker image to Kubernetes, the kubectl.yaml contains the yaml code needed for creating a deployment and a service in kubernetes.
+Now try to add the created docker image to Kubernetes, the `kubectl.yaml` contains the yaml code needed for creating a deployment and a service in kubernetes.
 deployment: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
 service: https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service
 
 For the service add the `type: Loadbalancer` as seen below
-
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: api-service
-    spec:
-      selector:
-        app: api
-      ports:
-        - protocol: TCP
-          port: 80
-          targetPort: 80
-      type: LoadBalancer
-
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  selector:
+    app: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+```
 Run `kubectl apply -f api.yaml` to apply it to kubernetes.
 The service type is of the type LoadBalancer, which means it tries to expose it to your localhost if the service should only be exposed internally use ClusterIP instead.
 
 imagePullPolicy have been set to IfNotPresent, therefore kubernetes tries to pull from your local docker repository. If this was not set it would try to pull it from a remote repository.
 
-
-    apiVersion: apps/v1
-    kind: Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
     metadata:
-      name: api-deployment
       labels:
         app: api
     spec:
-      replicas: 3
-      selector:
-        matchLabels:
-          app: api
-      template:
-        metadata:
-          labels:
-            app: api
-        spec:
-          containers:
-          - name: api
-            image: api:1
-            **imagePullPolicy: IfNotPresent**
-            ports:
-            - containerPort: 80
-
+      containers:
+      - name: api
+        image: api:1
+        **imagePullPolicy: IfNotPresent**
+        ports:
+        - containerPort: 80
+```
 Not working? Get to this point: `git checkout task-3-api-yaml` 
 
 ### Access the different pods
@@ -182,42 +181,43 @@ Create a new API which points towards the old API, localhost you can use localho
 You can lookup the dns using the dashboard if you go the page called services.
 Remember to create a new Kubernetes yaml file, and give it another name.
 
-    apiVersion: apps/v1
-    kind: Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-invoke-deployment
+  labels:
+    app: api-invoke
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-invoke
+  template:
     metadata:
-      name: api-invoke-deployment
       labels:
         app: api-invoke
     spec:
-      replicas: 1
-      selector:
-        matchLabels:
-          app: api-invoke
-      template:
-        metadata:
-          labels:
-            app: api-invoke
-        spec:
-          containers:
-          - name: api-invoke
-            image: api-invoke:1
-            imagePullPolicy: IfNotPresent
-            ports:
-            - containerPort: 80
-    ---
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: api-invoke-service
-    spec:
-      selector:
-        app: api-invoke
-      ports:
-        - protocol: TCP
-          port: 81
-          targetPort: 80
-      type: LoadBalancer
-
+      containers:
+      - name: api-invoke
+        image: api-invoke:1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-invoke-service
+spec:
+  selector:
+    app: api-invoke
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 80
+  type: LoadBalancer
+```
 
 To see if it works delete the old service for your old api, and then re-create it using a ClusterIP. ClusterIP only lets pods internally in Kubernetes access the service. OBS: you need to delete the existing service before the tpye can be changed to ClusterIP.
 
@@ -227,24 +227,25 @@ Not working? Get to this point: `git checkout task-4-api-invoke`
 I have called this API `file-store`
 Create a simple api again this time the controller should be able to write to a file and get the current file text.
 
-    private const string FileName = "/tmp/text/test.txt";
+```C#
+private const string FileName = "/tmp/text/test.txt";
 
-    [HttpGet]
-    public string Get()
-    {
-        if (!System.IO.File.Exists(FileName)) return "";
-        using var sr = System.IO.File.OpenText(FileName);
-        return sr.ReadToEnd();
-    }
+[HttpGet]
+public string Get()
+{
+    if (!System.IO.File.Exists(FileName)) return "";
+    using var sr = System.IO.File.OpenText(FileName);
+    return sr.ReadToEnd();
+}
 
-    [HttpPost]
-    public IActionResult Post(string input)
-    {
-        using var streamWriter = System.IO.File.CreateText(FileName);
-        streamWriter.WriteLine(input);
-        return Ok();
-    }
-
+[HttpPost]
+public IActionResult Post(string input)
+{
+    using var streamWriter = System.IO.File.CreateText(FileName);
+    streamWriter.WriteLine(input);
+    return Ok();
+}
+```
 Not working? Get to this point: `git checkout task-5-filestore` 
 
 This is relativly easy if you have completed the other tasks, but the problem comes when you host it in docker/kubernetes and the pod restarts or dies then you lose your data.
@@ -255,61 +256,61 @@ pvc doc: https://kubernetes.io/docs/tasks/configure-pod-container/configure-pers
 
 How to use pvc in pods: https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#create-a-pod
 
-
-    apiVersion: apps/v1
-    kind: Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-store-deployment
+  labels:
+    app: file-store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-store
+  template:
     metadata:
-      name: file-store-deployment
       labels:
         app: file-store
     spec:
-      replicas: 1
-      selector:
-        matchLabels:
-          app: file-store
-      template:
-        metadata:
-          labels:
-            app: file-store
-        spec:
-          containers:
-          - name: file-store
-            image: file-store:1
-            imagePullPolicy: IfNotPresent
-            ports:
-            - containerPort: 80
-            volumeMounts:
-            - mountPath: "/tmp/text"
-              name: file-store-pv-storage
-          volumes:
-          - name: file-store-pv-storage
-            persistentVolumeClaim:
-              claimName: file-store-pv-claim
-    ---
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: file-store-service
-    spec:
-      selector:
-        app: file-store
-      ports:
-        - protocol: TCP
-          port: 82
-          targetPort: 80
-      type: LoadBalancer
-    ---
-    apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: file-store-pv-claim
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 3Gi
-
+      containers:
+      - name: file-store
+        image: file-store:1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/tmp/text"
+          name: file-store-pv-storage
+      volumes:
+      - name: file-store-pv-storage
+        persistentVolumeClaim:
+          claimName: file-store-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-store-service
+spec:
+  selector:
+    app: file-store
+  ports:
+    - protocol: TCP
+      port: 82
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-store-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+```
 Not working? Get to this point: `git checkout task-5-filestore-pvc`
 
 ## Extra stuff
