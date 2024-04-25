@@ -19,7 +19,7 @@ spec:
         image: file-store:1
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         volumeMounts:
         - mountPath: "/tmp/text"
           name: file-store-pv-storage
@@ -38,7 +38,7 @@ spec:
   ports:
     - protocol: TCP
       port: 82
-      targetPort: 80
+      targetPort: 8080
   type: LoadBalancer
 ---
 apiVersion: v1
